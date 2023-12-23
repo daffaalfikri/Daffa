@@ -1,7 +1,12 @@
 import streamlit as st
 import pandas as pd
+from mlxtend.frequent_patterns import association_rules, apriori
 from mlxtend.preprocessing import TransactionEncoder
-from mlxtend.frequent_patterns import apriori, association_rules
+
+df = pd.read_csv("Groceries data.csv")
+
+st.title("Market Analyst")
+
 
 # Fungsi untuk mendapatkan frequent itemsets dan association rules
 def get_apriori_results(transactions, min_support, min_confidence):
@@ -14,14 +19,17 @@ def get_apriori_results(transactions, min_support, min_confidence):
     frequent_itemsets = apriori(df, min_support=min_support, use_colnames=True)
 
     # Menerapkan aturan asosiasi dari itemset yang sering muncul
-    rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=min_confidence)
+    rules = association_rules(
+        frequent_itemsets, metric="confidence", min_threshold=min_confidence)
 
     return frequent_itemsets, rules
 
 # Menampilkan tampilan aplikasi Streamlit
+
+
 def main():
     st.title("Apriori Algorithm Demo")
- df = pd.read_csv('Groceries data.csv')
+
     # Contoh data transaksi
     transactions = [
         ['Roti', 'Susu', 'Telur'],
@@ -36,7 +44,8 @@ def main():
     min_confidence = st.slider("Minimum Confidence", 0.0, 1.0, 0.7)
 
     # Mendapatkan hasil dari algoritma Apriori
-    frequent_itemsets, rules = get_apriori_results(transactions, min_support, min_confidence)
+    frequent_itemsets, rules = get_apriori_results(
+        transactions, min_support, min_confidence)
 
     # Menampilkan hasil
     st.subheader("Frequent Itemsets:")
@@ -44,6 +53,7 @@ def main():
 
     st.subheader("Association Rules:")
     st.write(rules)
+
 
 if __name__ == "__main__":
     main()
