@@ -18,8 +18,8 @@ def get_data(itemDescription='', year=''):
 
 
 def user_input_features():
-    Product = st.selectbox("Member_number", ['12V U1 L&G 6', '6V GC2 ULTRA GOLF 12', 'AGM 12V 7AH .187 FASTON', '12V 18AH 310CCA AGM 12/0',
-                           '12V 31DT DURACELL ULTRA AGM 30', 'AGM 12V 5AH .187 FASTON', 'DC 12V 35AH J TERM', '12V 17.5AH 310 CCA', '1.5V IND AA ALK BULK', '1.5V ALKAL'])
+    Product = st.selectbox("Member_number", ['1808', '2552', '2300', '1187',
+                           '3037', '4941', '4501'])
     itemDescription = st.selectbox("itemDescription", ['tropical fruit', 'whole milk', 'pip fruit',
                                    'other vegetables', 'whole milk', 'rolls/buns', 'other vegetables', 'pot plants', 'whole milk'])
     year = st.select_slider("year", list(map(str, range(1, 42))))
