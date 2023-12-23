@@ -1,75 +1,49 @@
 import streamlit as st
 import pandas as pd
-from mlxtend.frequent_patterns import association_rules, apriori
 from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import apriori, association_rules
 
-df = pd.read_csv("Groceries data.csv")
+# Fungsi untuk mendapatkan frequent itemsets dan association rules
+def get_apriori_results(transactions, min_support, min_confidence):
+    # Membuat format data yang sesuai untuk algoritma Apriori
+    te = TransactionEncoder()
+    te_ary = te.fit(transactions).transform(transactions)
+    df = pd.DataFrame(te_ary, columns=te.columns_)
 
-st.title("Market Analyst")
+    # Menerapkan algoritma Apriori untuk mendapatkan itemset yang sering muncul
+    frequent_itemsets = apriori(df, min_support=min_support, use_colnames=True)
 
+    # Menerapkan aturan asosiasi dari itemset yang sering muncul
+    rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=min_confidence)
 
-def get_data(itemDescription='', year=''):
-    data = df.copy()
-    filtered = data.loc[
-        (data["itemDescription"].str.contains(itemDescription)) &
-        (data["year"].astype(str).str.contains(year))
+    return frequent_itemsets, rules
+
+# Menampilkan tampilan aplikasi Streamlit
+def main():
+    st.title("Apriori Algorithm Demo")
+ df = pd.read_csv('Groceries data.csv')
+    # Contoh data transaksi
+    transactions = [
+        ['Roti', 'Susu', 'Telur'],
+        ['Susu', 'Mentega'],
+        ['Roti', 'Susu', 'Mentega'],
+        ['Roti', 'Kopi'],
+        ['Kopi']
     ]
-    return filtered if not filtered.empty else "No Result"
 
+    # Parameter untuk algoritma Apriori
+    min_support = st.slider("Minimum Support", 0.0, 1.0, 0.2)
+    min_confidence = st.slider("Minimum Confidence", 0.0, 1.0, 0.7)
 
-def user_input_features():
-    Product = st.selectbox("Member_number", ['1808', '2552', '2300', '1187',
-                           '3037', '4941','4501'])
-    itemDescription = st.selectbox("itemDescription", ['tropical fruit', 'whole milk', 'pip fruit',
-                                   'other vegetables', 'whole milk', 'rolls/buns', 'other vegetables', 'pot plants', 'whole milk'])
-    year = st.select_slider("year", list(map(str, range(1, 42))))
-    return itemDescription, year, Product
+    # Mendapatkan hasil dari algoritma Apriori
+    frequent_itemsets, rules = get_apriori_results(transactions, min_support, min_confidence)
 
+    # Menampilkan hasil
+    st.subheader("Frequent Itemsets:")
+    st.write(frequent_itemsets)
 
-itemDescription, year, Product = user_input_features()
+    st.subheader("Association Rules:")
+    st.write(rules)
 
-data = get_data(itemDescription.lower(), year)
-
-
-def encode(x):
-    if x <= 0:
-        return 0
-    elif x >= 1:
-        return 1
-
-
-if not isinstance(data, str):
-    val_counts = df["itemDescription"].value_counts()
-    product_count_pivot = val_counts.pivot_table(
-        index='itemDescription', columns='Member_number', values='Count', aggfunc='sum').fillna(0)
-    product_count_pivot = product_count_pivot.applymap(encode)
-
-    frequent_itemsets_plus = apriori(product_count_pivot, min_support=0.03,
-                                     use_colnames=True).sort_values('support', ascending=False).reset_index(drop=True)
-
-    rules = association_rules(frequent_itemsets_plus, metric='lift',
-                              min_threshold=1).sort_values('lift', ascending=False).reset_index(drop=True)[["antecedents", "consequents", "support", "confidence", "lift"]]
-    rules.sort_values('confidence', ascending=False, inplace=True)
-
-
-def parse_list(x):
-    x = list(x)
-    if len(x) == 1:
-        return x[0]
-    elif len(x) > 1:
-        return ", ".join(x)
-
-
-def return_product_df(product_antecedents):
-    data = rules[["antecedents", "consequents"]].copy()
-
-    data["antecedents"] = data["antecedents"].apply(parse_list)
-    data["consequents"] = data["consequents"].apply(parse_list)
-
-    return list(data.loc[data["antecedents"] == product_antecedents].iloc[0, :])
-
-
-if type(data) != type("No Result"):
-    st.markdown("Rekomendasi: ")
-    st.success(
-        f"Jika konsumen membeli **{product}**, maka membeli **{return_product_df(product)[1]}** secara bersamaan")
+if __name__ == "__main__":
+    main()
