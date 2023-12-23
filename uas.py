@@ -5,8 +5,29 @@ from mlxtend.preprocessing import TransactionEncoder
 
 df = pd.read_csv("Groceries data.csv")
 
-st.title("Market Analyst")
+st.title("Market Analyst MBA")
 
+def get_data(itemDescription='', year=''):
+    data = df.copy()
+    filtered = data.loc[
+        (data["itemDescription"].str.contains(itemDescription)) &
+        (data["year"].astype(str).str.contains(year))
+    ]
+    return filtered if not filtered.empty else "No Result"
+
+
+def user_input_features():
+    Product = st.selectbox("Member_number", ['1808', '2552', '2300', '1187',
+                           '3037', '4941','4501'])
+    itemDescription = st.selectbox("itemDescription", ['tropical fruit', 'whole milk', 'pip fruit',
+                                   'other vegetables', 'whole milk', 'rolls/buns', 'other vegetables', 'pot plants', 'whole milk'])
+    year = st.select_slider("year", list(map(str, range(1, 42))))
+    return itemDescription, year, Product
+
+
+itemDescription, year, Product = user_input_features()
+
+data = get_data(itemDescription.lower(), year)
 
 # Fungsi untuk mendapatkan frequent itemsets dan association rules
 def get_apriori_results(transactions, min_support, min_confidence):
@@ -28,7 +49,7 @@ def get_apriori_results(transactions, min_support, min_confidence):
 
 
 def main():
-    st.title("Apriori Algorithm Demo")
+    st.title("Apriori Algorithm Association")
 
     # Contoh data transaksi
     transactions = [
