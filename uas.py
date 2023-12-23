@@ -53,11 +53,11 @@ def main():
 
     # Contoh data transaksi
     transactions = [
-        ['Roti', 'Susu', 'Telur'],
-        ['Susu', 'Mentega'],
-        ['Roti', 'Susu', 'Mentega'],
-        ['Roti', 'Kopi'],
-        ['Kopi']
+        ['sausage', 'whole milk', 'curd'],
+        ['sausage', 'curd'],
+        ['whole milk', 'sausage', 'curd'],
+        ['curd', 'whole milk'],
+        ['sausage']
     ]
 
     # Parameter untuk algoritma Apriori
