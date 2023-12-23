@@ -49,7 +49,7 @@ def get_apriori_results(transactions, min_support, min_confidence):
 
 
 def main():
-    st.title("Apriori Algorithm Association")
+    st.title("Apriori Algoritma Association")
 
     # Contoh data transaksi
     transactions = [
@@ -61,8 +61,8 @@ def main():
     ]
 
     # Parameter untuk algoritma Apriori
-    min_support = st.slider("Minimum Support", 0.0, 1.0, 0.2)
-    min_confidence = st.slider("Minimum Confidence", 0.0, 1.0, 0.7)
+    min_support = st.slider("Minimal Support", 0.0, 1.0, 0.2)
+    min_confidence = st.slider("Minimal Confidence", 0.0, 1.0, 0.7)
 
     # Mendapatkan hasil dari algoritma Apriori
     frequent_itemsets, rules = get_apriori_results(
