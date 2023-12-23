@@ -38,6 +38,74 @@ def encode(x):
         return 1
 
 
+if not isinstance(data, str):
+    val_counts = df["itemDescription"].value_counts()
+    product_count_pivot = val_counts.pivot_table(
+        index='itemDescription', columns='Member_number', values='Count', aggfunc='sum').fillna(0)
+    product_count_pivot = product_count_pivot.applymap(encode)
+
+    frequent_itemsets_plus = apriori(product_count_pivot, min_support=0.03,
+                                     use_colnames=True).sort_values('support', ascending=False).reset_index(drop=True)
+
+    rules = association_rules(frequent_itemsets_plus, metric='lift',
+                              min_threshold=1).sort_values('lift', ascending=False).reset_index(drop=True)[["antecedents", "consequents", "support", "confidence", "lift"]]
+    rules.sort_values('confidence', ascending=False, inplace=True)
+
+
+def generate_candidates(prev_candidates, k):
+    candidates = set()
+    for i in range(len(prev_candidates)):
+        for j in range(i + 1, len(prev_candidates)):
+            itemset1 = set(prev_candidates[i])
+            itemset2 = set(prev_candidates[j])
+            union_set = itemset1.union(itemset2)
+            if len(union_set) == k:
+                candidates.add(tuple(sorted(union_set)))
+    return list(candidates)
+
+def prune_candidates(candidates, prev_frequent_sets):
+    pruned_candidates = []
+    for candidate in candidates:
+        subsets = [set(x) for x in itertools.combinations(candidate, len(candidate) - 1)]
+        is_valid = all(subset in prev_frequent_sets for subset in subsets)
+        if is_valid:
+            pruned_candidates.append(candidate)
+    return pruned_candidates
+
+def apriori(transactions, min_support):
+    itemsets = [frozenset([item]) for item in set(item for transaction in transactions for item in transaction)]
+    frequent_itemsets = []
+    
+    k = 2
+    while itemsets:
+        candidates = generate_candidates(itemsets, k)
+        item_counts = {candidate: 0 for candidate in candidates}
+        
+        for transaction in transactions:
+            for candidate in candidates:
+                if set(candidate).issubset(transaction):
+                    item_counts[candidate] += 1
+
+        frequent_itemsets_k = [itemset for itemset, count in item_counts.items() if count / len(transactions) >= min_support]
+        frequent_itemsets.extend(frequent_itemsets_k)
+        
+        itemsets = prune_candidates(generate_candidates(frequent_itemsets_k, k+1), frequent_itemsets_k)
+        k += 1
+    
+    return frequent_itemsets
+
+# Contoh Penggunaan
+transactions = [
+    ['whole milk', 'sausage', 'curd'],
+]
+
+min_support = 0.2
+result = apriori(transactions, min_support)
+print("Frequent Itemsets:")
+print(result)
+
+
+
 
 def parse_list(x):
     x = list(x)
