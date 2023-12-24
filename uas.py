@@ -21,7 +21,7 @@ def user_input_features():
                            '3037', '4941','4501'])
     itemDescription = st.selectbox("itemDescription", ['tropical fruit', 'whole milk', 'pip fruit',
                                    'other vegetables', 'whole milk', 'rolls/buns', 'other vegetables', 'pot plants', 'whole milk'])
-    year = st.select_slider("year", list(map(str, range(2014, 2015))))
+    year = st.select_slider("Bulan", list(map(str, range(1, 12))))
     return itemDescription, year, Product
 
 
