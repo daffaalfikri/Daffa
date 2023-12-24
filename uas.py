@@ -43,8 +43,6 @@ def get_apriori_results(transactions, min_support, min_confidence):
     rules = association_rules(
         frequent_itemsets, metric="confidence", min_threshold=min_confidence)
 
-        frequent_itemsets, metric="antecedents", min_threshold=min_confidence)
-
     return frequent_itemsets, rules
 
 # Menampilkan tampilan aplikasi Streamlit
