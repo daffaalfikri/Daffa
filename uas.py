@@ -21,7 +21,7 @@ def user_input_features():
                            '3037', '4941','4501'])
     itemDescription = st.selectbox("itemDescription", ['tropical fruit', 'whole milk', 'pip fruit',
                                    'other vegetables', 'whole milk', 'rolls/buns', 'other vegetables', 'pot plants', 'whole milk'])
-    year = st.select_slider("year", list(map(str, range(1, 42))))
+    year = st.select_slider("year", list(map(str, range(2014, 2015))))
     return itemDescription, year, Product
 
 
@@ -43,6 +43,9 @@ def get_apriori_results(transactions, min_support, min_confidence):
     rules = association_rules(
         frequent_itemsets, metric="confidence", min_threshold=min_confidence)
 
+     rules = association_rules(
+        frequent_itemsets, metric="antecedents", min_threshold=min_confidence)
+
     return frequent_itemsets, rules
 
 # Menampilkan tampilan aplikasi Streamlit
@@ -63,7 +66,8 @@ def main():
     # Parameter untuk algoritma Apriori
     min_support = st.slider("Minimal Support", 0.0, 0.8, 0.2)
     min_confidence = st.slider("Minimal Confidence", 0.0, 1.0, 0.7)
-
+    min_antecedents = st.slider("Minimal antecedents", 0.0, 0.9, 0.7)
+    
     # Mendapatkan hasil dari algoritma Apriori
     frequent_itemsets, rules = get_apriori_results(
         transactions, min_support, min_confidence)
