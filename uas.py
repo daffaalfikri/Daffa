@@ -63,7 +63,6 @@ def main():
     # Parameter untuk algoritma Apriori
     min_support = st.slider("Minimal Support", 0.0, 0.8, 0.2)
     min_confidence = st.slider("Minimal Confidence", 0.0, 1.0, 0.7)
-    min_antecedents = st.slider("Minimal antecedents", 0.0, 0.9, 0.7)
     
     # Mendapatkan hasil dari algoritma Apriori
     frequent_itemsets, rules = get_apriori_results(
